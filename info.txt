@@ -1,0 +1,14 @@
+ios bundle id: org.reactjs.native.akash.listicle
+google developer oauth login app email login: realcricketgame1@gmail.com
+google login testing used: realcricketgame1@gmail.com
+appName: listicle
+website url: https://www.listicle.com
+sha1 fingerprint: 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25
+package name for android in manifest.xml file: com.listicle
+
+To integrate google login on android and ios
+i) first do as per official google docs and apple docs from npmjs package.
+    a) https://react-native-google-signin.github.io/docs/setting-up/get-config-file
+    b) https://developers.google.com/identity/sign-in/android/start-integrating
+ii) on android read this blog => https://stackoverflow.com/a/78096058/22214496
+
