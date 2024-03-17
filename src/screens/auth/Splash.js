@@ -2,22 +2,33 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
 import { COLORS } from '../../utils/COLORS';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Splash = () => {
+const Splash = ({navigation}) => {
+  const onSignUp = () => {
+    navigation.navigate('SignUp');
+  }
+
+  const onSignIn = () => {
+    navigation.navigate('SignIn');
+  }
+
   return (
-    <View style={styles.container}>
-      <Image resizeMode='contain' style={styles.image} source={require('./../../assets/splash-image.png')} />
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>You'll Find  Here!</Text>
-        <Text style={[styles.title, styles.innerTitle]}>All you need</Text>
-        <Text style={styles.title}>Here!</Text>
-      </View>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Image resizeMode='contain' style={styles.image} source={require('./../../assets/splash-image.png')} />
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>You'll Find  Here!</Text>
+          <Text style={[styles.title, styles.innerTitle]}>All you need</Text>
+          <Text style={styles.title}>Here!</Text>
+        </View>
 
-      <Button title='Sign Up' />
-      <Pressable hitSlop={10}>
-        <Text style={styles.footerText}>Sign In</Text>
-      </Pressable>
-    </View>
+        <Button title='Sign Up' onPress={onSignUp}/>
+        <Pressable hitSlop={10}>
+          <Text style={styles.footerText} onPress={onSignIn}>Sign In</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
   )
 }
 

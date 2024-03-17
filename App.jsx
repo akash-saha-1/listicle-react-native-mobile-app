@@ -11,15 +11,28 @@ import Splash from './src/screens/auth/Splash';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import SignUp from './src/screens/auth/SignUp';
 import Config from 'react-native-config';
-import Signin from './src/screens/auth/Signin';
+import SignIn from './src/screens/auth/SignIn';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { COLORS } from './src/utils/COLORS';
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Home from './src/screens/app/Home';
+import Profile from './src/screens/app/Profile';
+import Favorites from './src/screens/app/Favorites';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import ProductDetails from './src/screens/app/ProductDetails';
 
 function App() {
-
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.white,
   };
+
+  const isSignedIn = true;
+  const Stack = createNativeStackNavigator();
+  const Tab = createBottomTabNavigator();
 
   useEffect(()=>{
     GoogleSignin.configure({
@@ -30,12 +43,66 @@ function App() {
     });  
   }, [])
 
+  const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: COLORS.white
+    },
+  };
+
+  const Tabs = () => {
+    return (
+      <Tab.Navigator 
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Favorites') {
+              iconName = focused ? 'heart' : 'heart-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            borderTopColor: COLORS.lightGrey
+          }
+        })}
+      >
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Favorites" component={Favorites} />
+        <Tab.Screen name="Profile" component={Profile} />
+      </Tab.Navigator>
+    )
+  }
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      {/* <Splash /> */}
-      {/* <SignUp /> */}
-      <Signin />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme}>
+        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+          {isSignedIn ? (
+            <>
+              <Stack.Screen name="Tabs" component={Tabs} />
+              <Stack.Screen name="ProductDetails" component={ProductDetails} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Splash" component={Splash} />
+              <Stack.Screen name="SignIn" component={SignIn} />
+              <Stack.Screen name="SignUp" component={SignUp} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

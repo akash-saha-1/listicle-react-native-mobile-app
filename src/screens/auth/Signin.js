@@ -6,30 +6,37 @@ import { COLORS } from '../../utils/COLORS';
 import Button from '../../components/Button';
 import Seperator from '../../components/Seperator';
 import GoogleLogin from '../../components/GoogleLogin';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Signin = () => {
+const SignIn = ({navigation}) => {
 
     const onSignUp = () => {
-        
+        navigation.navigate('SignUp');
+    }
+
+    const onBackPress = () => {
+        navigation.goBack();
     }
 
   return (
-    <ScrollView style={styles.container}>
-        <AuthHeader title='Sign In' />
+    <SafeAreaView>
+        <ScrollView style={styles.container}>
+            <AuthHeader title='Sign In' onBackPress={onBackPress} />
 
-        <Input label={'E-mail'} placeholder={'example@gmail.com'}/>
-        <Input isPassword label={'Password'} placeholder={'********'}/>
+            <Input label={'E-mail'} placeholder={'example@gmail.com'}/>
+            <Input isPassword label={'Password'} placeholder={'********'}/>
 
-        <Button style={styles.button} title={'Sign In'} />
-        <Seperator text='Or sign in with' />
+            <Button style={styles.button} title={'Sign In'} />
+            <Seperator text='Or sign in with' />
 
-        <GoogleLogin />
+            <GoogleLogin />
 
-        <Text style={styles.footerText}>
-            Don't have an account? 
-            <Text onPress={onSignUp} style={styles.footerLink}> Sign Up</Text>
-        </Text>
-    </ScrollView>
+            <Text style={styles.footerText}>
+                Don't have an account? 
+                <Text onPress={onSignUp} style={styles.footerLink}> Sign Up</Text>
+            </Text>
+        </ScrollView>
+    </SafeAreaView>
   )
 }
 
@@ -51,4 +58,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Signin
+export default SignIn
