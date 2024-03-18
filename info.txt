@@ -1,6 +1,6 @@
 ios bundle id: org.reactjs.native.akash.listicle
 google developer oauth login app email login: realcricketgame1@gmail.com
-google login testing used: realcricketgame1@gmail.com
+google login testing used: realcricketgame20@gmail.com
 appName: listicle
 website url: https://www.listicle.com
 sha1 fingerprint: 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25
@@ -13,3 +13,4 @@ i) first do as per official google docs and apple docs from npmjs package.
 ii) on android read this blog => https://stackoverflow.com/a/78096058/22214496
 
 Here rest api used is postman default api: https://documenter.getpostman.com/view/16077824/2s84DkUQZK
+sample user naem: Real Cricket game 20

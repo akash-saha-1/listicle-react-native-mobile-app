@@ -33,7 +33,7 @@ function App() {
     backgroundColor: isDarkMode ? Colors.darker : Colors.white,
   };
 
-  const isSignedIn = true;
+  const isSignedIn = false;
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
