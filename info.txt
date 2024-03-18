@@ -12,3 +12,4 @@ i) first do as per official google docs and apple docs from npmjs package.
     b) https://developers.google.com/identity/sign-in/android/start-integrating
 ii) on android read this blog => https://stackoverflow.com/a/78096058/22214496
 
+Here rest api used is postman default api: https://documenter.getpostman.com/view/16077824/2s84DkUQZK

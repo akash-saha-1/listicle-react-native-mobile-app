@@ -23,6 +23,9 @@ import Profile from './src/screens/app/Profile';
 import Favorites from './src/screens/app/Favorites';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProductDetails from './src/screens/app/ProductDetails';
+import Settings from './src/screens/app/Settings';
+import CreateListing from './src/screens/app/CreateListing';
+import MyListings from './src/screens/app/MyListings';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -51,6 +54,18 @@ function App() {
     },
   };
 
+
+  const ProfileStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="CreateListing" component={CreateListing} />
+        <Stack.Screen name="MyListings" component={MyListings} />
+      </Stack.Navigator>
+    )
+  }
+
   const Tabs = () => {
     return (
       <Tab.Navigator 
@@ -62,7 +77,7 @@ function App() {
               iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Favorites') {
               iconName = focused ? 'heart' : 'heart-outline';
-            } else if (route.name === 'Profile') {
+            } else if (route.name === 'ProfileStack') {
               iconName = focused ? 'person' : 'person-outline';
             }
 
@@ -79,7 +94,7 @@ function App() {
       >
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Favorites" component={Favorites} />
-        <Tab.Screen name="Profile" component={Profile} />
+        <Tab.Screen name="ProfileStack" component={ProfileStack} />
       </Tab.Navigator>
     )
   }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { COLORS } from '../utils/COLORS';
 
-const FavoriteItem = ({title, price, image, onPress}) => {
+const FavoriteItem = ({title, price, image, onPress, icon, iconStyle}) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
         <View style={styles.imageContainer}>
@@ -13,7 +13,7 @@ const FavoriteItem = ({title, price, image, onPress}) => {
             <Text style={styles.price}>{price}</Text>
         </View>
 
-        <Image source={require('./../assets/cross.png')} style={styles.icon} />
+        <Image source={icon || require('./../assets/cross.png')} style={[styles.icon, iconStyle]} />
     </Pressable>
   )
 }
