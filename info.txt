@@ -13,4 +13,32 @@ i) first do as per official google docs and apple docs from npmjs package.
 ii) on android read this blog => https://stackoverflow.com/a/78096058/22214496
 
 Here rest api used is postman default api: https://documenter.getpostman.com/view/16077824/2s84DkUQZK
-sample user naem: Real Cricket game 20
+sample user name: Real Cricket game 20
+Working Signin user email: realcricketgame20@gmail.com
+Working Signin user password: 12345
+
+------------------------------------------------------------------------------------------------------------
+Always use Routes file using navigation conatiner like here, so that full component does not rerender again on context state value changes, only dependent variables changes and their state changes which is subscribed to that particular context. And change all global context from individual compinent itself, it will not rerender. Also try to use different Context file for different Context like below.
+
+import React, { createContext, useState } from 'react';
+
+// Create a context
+const ThemeContext = createContext();
+
+// Create a provider component
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export { ThemeProvider, ThemeContext };
+------------------------------------------------------------------------------------------------------------

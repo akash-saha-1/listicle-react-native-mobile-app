@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,18 +6,18 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Splash from './src/screens/auth/Splash';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import SignUp from './src/screens/auth/SignUp';
 import Config from 'react-native-config';
 import SignIn from './src/screens/auth/SignIn';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { COLORS } from './src/utils/COLORS';
-import { DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {COLORS} from './src/utils/COLORS';
+import {DefaultTheme, DarkTheme} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from './src/screens/app/Home';
 import Profile from './src/screens/app/Profile';
 import Favorites from './src/screens/app/Favorites';
@@ -27,11 +27,11 @@ import Settings from './src/screens/app/Settings';
 import CreateListing from './src/screens/app/CreateListing';
 import MyListings from './src/screens/app/MyListings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addTokenToAxios } from './src/utils/Request';
-import { getProfile, getServices } from './src/utils/BackendAPICalls';
+import {addTokenToAxios} from './src/utils/Request';
+import {getProfile, getServices} from './src/utils/BackendAPICalls';
 
-export const UserContext = createContext({ });
-export const ProfileContext = createContext({ });
+export const UserContext = createContext({});
+export const ProfileContext = createContext({});
 export const ServicesContext = createContext([]);
 
 function App() {
@@ -49,69 +49,68 @@ function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
-  useEffect(()=> {
+  useEffect(() => {
     (async () => {
       let token = await AsyncStorage.getItem('auth_token');
-      if(token?.length > 1){
+      if (token?.length > 1) {
         setUser({token});
       }
     })();
   }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     const getProfileData = async () => {
       const data = await getProfile();
       //console.log(`data: `, data);
       setProfile(data);
-    }
+    };
 
     const getUserServicesData = async () => {
       const data = await getServices();
       //console.log(`data: `, data);
       setServices(data);
-    }
+    };
 
-    if(user?.token) {
+    if (user?.token) {
       addTokenToAxios(user?.token);
       getProfileData();
       getUserServicesData();
     }
   }, [user]);
 
-  useEffect(()=>{
+  useEffect(() => {
     GoogleSignin.configure({
       scopes: ['profile'],
       webClientId: Config.GOOGLE_WEB_CLIENT_ID,
       iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
       forceCodeForRefreshToken: true,
-    });  
+    });
   }, []);
 
   const MyTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: COLORS.white
+      background: COLORS.white,
     },
   };
 
-
   const ProfileStack = () => {
     return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="CreateListing" component={CreateListing} />
         <Stack.Screen name="MyListings" component={MyListings} />
       </Stack.Navigator>
-    )
-  }
+    );
+  };
 
   const Tabs = () => {
     return (
-      <Tab.Navigator 
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          tabBarIcon: ({focused, color, size}) => {
             let iconName;
 
             if (route.name === 'Home') {
@@ -129,16 +128,15 @@ function App() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {
-            borderTopColor: COLORS.lightGrey
-          }
-        })}
-      >
+            borderTopColor: COLORS.lightGrey,
+          },
+        })}>
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Favorites" component={Favorites} />
         <Tab.Screen name="ProfileStack" component={ProfileStack} />
       </Tab.Navigator>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaProvider>
@@ -146,11 +144,16 @@ function App() {
         <ProfileContext.Provider value={{profile, setProfile}}>
           <ServicesContext.Provider value={{services, setServices}}>
             <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme}>
-              <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+              <Stack.Navigator
+                initialRouteName="Splash"
+                screenOptions={{headerShown: false}}>
                 {user?.token?.length > 1 ? (
                   <>
                     <Stack.Screen name="Tabs" component={Tabs} />
-                    <Stack.Screen name="ProductDetails" component={ProductDetails} />
+                    <Stack.Screen
+                      name="ProductDetails"
+                      component={ProductDetails}
+                    />
                   </>
                 ) : (
                   <>
@@ -168,7 +171,6 @@ function App() {
   );
 }
 
-const styles = StyleSheet.create({
-});
+const styles = StyleSheet.create({});
 
 export default App;

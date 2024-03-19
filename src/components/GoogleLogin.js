@@ -1,7 +1,10 @@
-import React from 'react'
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { COLORS } from '../utils/COLORS';
+import React from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import {COLORS} from '../utils/COLORS';
 
 const GoogleLogin = ({}) => {
   const handleGoogleLogin = async () => {
@@ -17,34 +20,40 @@ const GoogleLogin = ({}) => {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
       } else {
-        console.error("error while googe login: ", error);
+        console.error('error while googe login: ', error);
       }
     }
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.6} style={styles.container} onPress={handleGoogleLogin}>
-        <Image style={styles.image} source={require('./../assets/google-icon.png')} />
+    <TouchableOpacity
+      activeOpacity={0.6}
+      style={styles.container}
+      onPress={handleGoogleLogin}>
+      <Image
+        style={styles.image}
+        source={require('./../assets/google-icon.png')}
+      />
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: COLORS.darkGrey,
-        borderRadius: 14,
-        padding: 16,
-        width: '40%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 5,
-        marginBottom: 50
-    },
-    image: {
-        width: 30,
-        height: 30
-    }
+  container: {
+    backgroundColor: COLORS.darkGrey,
+    borderRadius: 14,
+    padding: 16,
+    width: '40%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+    marginBottom: 50,
+  },
+  image: {
+    width: 30,
+    height: 30,
+  },
 });
 
 export default GoogleLogin;
