@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AuthHeader from '../../components/AuthHeader';
 import Input from '../../components/Input';
@@ -9,11 +9,14 @@ import Seperator from '../../components/Seperator';
 import GoogleLogin from '../../components/GoogleLogin';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { request } from '../../utils/Request';
+import { signup } from '../../utils/BackendAPICalls';
+import { UserContext } from '../../../App';
 
 const SignUp = ({navigation}) => {
     const [checked, setChecked] = useState(false);
     const [values, setValues] = useState({});
     const [loading, setLoading] = useState(false);
+    const {user, setUser} = useContext(UserContext);
 
     const onSignIn = () => {
         navigation.navigate('SignIn');
@@ -38,18 +41,8 @@ const SignUp = ({navigation}) => {
                 return Alert.alert('Password do not match! Please enter same password.');
             }
     
-            const response = await request({
-                url: '/user/register',
-                method: 'post',
-                data: values,
-            });
-
-            console.log('response :>> ', response);
-            if(response?.status == 200) {
-                Alert.alert(`You have successfully registered with email: ${values?.email}`);
-            } else {
-                Alert.alert(`Something went wrong while registration! Please try again later.`);
-            }
+            const token = await signup(values);
+            setUser({token});
         } catch (error) {
             console.error('error :>> ', error);
             Alert.alert(`${error}`);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Header'
@@ -6,10 +6,13 @@ import ListItem from '../../components/ListItem'
 import { COLORS } from '../../utils/COLORS'
 import EditableBox from '../../components/EditableBox'
 import Button from '../../components/Button'
+import { ProfileContext } from '../../../App'
+import { updateProfile } from '../../utils/BackendAPICalls'
 
 const Settings = ({navigation}) => {
   const [editing, setEditing] = useState(false);
-  const [values, setValues] = useState({name: 'Bruno Pham', email: 'bruno203@gmail.com'});
+  const {profile, setProfile} = useContext(ProfileContext);
+  const [values, setValues] = useState({_id: profile?._id, fullName: profile?.fullName, email: profile?.email});
 
   const onItemPress = () => {
     Linking.openURL(`https://reactnative.dev/docs/getting-started`);
@@ -19,7 +22,9 @@ const Settings = ({navigation}) => {
     setEditing(!editing);
   }
 
-  const onSave = () => {
+  const onSave = async () => {
+    const updatedProfile = await updateProfile(values);
+    setProfile(updatedProfile);
     setEditing(false);
   }
 
@@ -38,7 +43,7 @@ const Settings = ({navigation}) => {
           </Pressable>
         </View>
         
-        <EditableBox label="Name" onChangeText={(val) => onChange('name', val)} value={values.name} editable={editing} />
+        <EditableBox label="fullName" onChangeText={(val) => onChange('fullName', val)} value={values.fullName} editable={editing} />
         <EditableBox label="Email" onChangeText={(val) => onChange('email', val)} value={values.email} editable={editing} />
         {editing && (<Button style={styles.button} title='Save' onPress={onSave}/>)}
 

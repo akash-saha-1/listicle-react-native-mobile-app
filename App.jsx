@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -26,8 +26,20 @@ import ProductDetails from './src/screens/app/ProductDetails';
 import Settings from './src/screens/app/Settings';
 import CreateListing from './src/screens/app/CreateListing';
 import MyListings from './src/screens/app/MyListings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addTokenToAxios } from './src/utils/Request';
+import { getProfile, getServices } from './src/utils/BackendAPICalls';
+
+export const UserContext = createContext({ });
+export const ProfileContext = createContext({ });
+export const ServicesContext = createContext([]);
 
 function App() {
+  const [user, setUser] = useState({});
+  const [profile, setProfile] = useState({});
+  const [services, setServices] = useState([]);
+  //console.log(`user from app.js: `, user);
+
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.white,
@@ -37,6 +49,35 @@ function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
+  useEffect(()=> {
+    (async () => {
+      let token = await AsyncStorage.getItem('auth_token');
+      if(token?.length > 1){
+        setUser({token});
+      }
+    })();
+  }, []);
+
+  useEffect(()=> {
+    const getProfileData = async () => {
+      const data = await getProfile();
+      //console.log(`data: `, data);
+      setProfile(data);
+    }
+
+    const getUserServicesData = async () => {
+      const data = await getServices();
+      //console.log(`data: `, data);
+      setServices(data);
+    }
+
+    if(user?.token) {
+      addTokenToAxios(user?.token);
+      getProfileData();
+      getUserServicesData();
+    }
+  }, [user]);
+
   useEffect(()=>{
     GoogleSignin.configure({
       scopes: ['profile'],
@@ -44,7 +85,7 @@ function App() {
       iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
       forceCodeForRefreshToken: true,
     });  
-  }, [])
+  }, []);
 
   const MyTheme = {
     ...DefaultTheme,
@@ -101,22 +142,28 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme}>
-        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-          {isSignedIn ? (
-            <>
-              <Stack.Screen name="Tabs" component={Tabs} />
-              <Stack.Screen name="ProductDetails" component={ProductDetails} />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="Splash" component={Splash} />
-              <Stack.Screen name="SignIn" component={SignIn} />
-              <Stack.Screen name="SignUp" component={SignUp} />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <UserContext.Provider value={{user, setUser}}>
+        <ProfileContext.Provider value={{profile, setProfile}}>
+          <ServicesContext.Provider value={{services, setServices}}>
+            <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme}>
+              <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+                {user?.token?.length > 1 ? (
+                  <>
+                    <Stack.Screen name="Tabs" component={Tabs} />
+                    <Stack.Screen name="ProductDetails" component={ProductDetails} />
+                  </>
+                ) : (
+                  <>
+                    <Stack.Screen name="Splash" component={Splash} />
+                    <Stack.Screen name="SignIn" component={SignIn} />
+                    <Stack.Screen name="SignUp" component={SignUp} />
+                  </>
+                )}
+              </Stack.Navigator>
+            </NavigationContainer>
+          </ServicesContext.Provider>
+        </ProfileContext.Provider>
+      </UserContext.Provider>
     </SafeAreaProvider>
   );
 }

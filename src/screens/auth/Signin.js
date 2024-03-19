@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useContext, useState } from 'react'
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AuthHeader from '../../components/AuthHeader';
 import Input from '../../components/Input';
 import { COLORS } from '../../utils/COLORS';
@@ -7,8 +7,17 @@ import Button from '../../components/Button';
 import Seperator from '../../components/Seperator';
 import GoogleLogin from '../../components/GoogleLogin';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { login } from '../../utils/BackendAPICalls';
+import { UserContext } from '../../../App';
 
 const SignIn = ({navigation}) => {
+    const [values, setValues] = useState({email: '', password: ''});
+    const [loading, setLoading] = useState(false);
+    const {user, setUser} = useContext(UserContext);
+
+    const onChangeText = (key, value) => {
+        setValues({...values, [key]: value});
+    }
 
     const onSignUp = () => {
         navigation.navigate('SignUp');
@@ -18,22 +27,40 @@ const SignIn = ({navigation}) => {
         navigation.goBack();
     }
 
+    const onSubmit = async () => {
+        setLoading(true);
+        try {
+            if(!values?.email || !values?.password) {
+                return Alert.alert('All fields are required!');
+            }
+    
+            const token = await login(values);
+            setUser({token});
+        } catch (error) {
+            console.error('error :>> ', error);
+            Alert.alert(`${error}`);
+        } 
+        setLoading(false);
+    }
+
   return (
     <SafeAreaView>
         <ScrollView style={styles.container}>
             <AuthHeader title='Sign In' onBackPress={onBackPress} />
 
-            <Input label={'E-mail'} placeholder={'example@gmail.com'}/>
-            <Input isPassword label={'Password'} placeholder={'********'}/>
+            <Input value={values.email} onChangeText={(val) => onChangeText('email', val)} label={'E-mail'} placeholder={'example@gmail.com'}/>
+            <Input isPassword value={values.password} onChangeText={(val) => onChangeText('password', val)} label={'Password'} placeholder={'********'}/>
 
-            <Button style={styles.button} title={'Sign In'} />
+            {!loading && (<Button style={styles.button} title={'Sign In'} onPress={onSubmit} />)}
+            {loading && <ActivityIndicator />}
+
             <Seperator text='Or sign in with' />
 
             <GoogleLogin />
 
             <Text style={styles.footerText}>
                 Don't have an account? 
-                <Text onPress={onSignUp} style={styles.footerLink}> Sign Up</Text>
+                <Text onPress={onSignUp} style={styles.footerLink}>Sign Up</Text>
             </Text>
         </ScrollView>
     </SafeAreaView>

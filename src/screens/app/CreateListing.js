@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, Image, KeyboardAvoidingView, Linking, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Header'
@@ -7,11 +7,21 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Input from '../../components/Input'
 import { categories } from '../../data/categories'
 import Button from '../../components/Button'
+import { ServicesContext } from '../../../App'
+import { addService } from '../../utils/BackendAPICalls'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const CreateListing = ({navigation}) => {
+  const {services, setServices} = useContext(ServicesContext);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [values, setValues] = useState({})
+  const [values, setValues] = useState({});
+
+  useEffect(() => {
+    setValues({});
+    setImages([]);
+  }, [navigation.isFocused]);
+
 
   const uploadNewImage = async () => {
     setLoading(true);
@@ -28,6 +38,24 @@ const CreateListing = ({navigation}) => {
 
   const onChangeText = (key, val) => {
     setValues({...values, [key]: val});
+  }
+
+  const onSubmit = async () => {
+    setLoading(true);
+    const img = images?.length > 0 ? images[0]: null;
+    let data = {...values, category: values?.category?.id};
+    if(img) {
+      data['image'] = {uri: img?.uri, name: img?.fileName, type: img?.type};
+    }
+    console.log(`multipart form data before sending: `, data);
+
+    const updatedServices = await addService(data);
+    await AsyncStorage.setItem('currentPage', 'MyListings');
+    setValues({});
+    setServices(updatedServices);
+    setLoading(false);
+
+    navigation.navigate('MyListings');
   }
 
   return (
@@ -61,7 +89,7 @@ const CreateListing = ({navigation}) => {
           <Input placeholder='Tell us more...' label='Description' value={values.description} onChangeText={(v) => onChangeText('description', v)} multiline style={styles.textarea} />
         </KeyboardAvoidingView>
 
-        <Button title={'Submit'} style={styles.button} />
+        {!loading && (<Button title={'Submit'} style={styles.button} onPress={onSubmit} />)}
       </ScrollView>
     </SafeAreaView>
   )
@@ -134,4 +162,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default React.memo(CreateListing)
+export default CreateListing

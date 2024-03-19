@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Dimensions, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../../utils/COLORS';
 import Button from '../../components/Button';
 import ImageCarousel from '../../components/ImageCarousel';
+import Config from 'react-native-config';
+import { updateService } from '../../utils/BackendAPICalls';
+import { ServicesContext } from '../../../App';
 
 const {width} = Dimensions.get('window');
 
 const ProductDetails = ({navigation, route}) => {
-    const product = route?.params?.product;
+    const productId = route?.params?.product?._id;
+    const {services, setServices} = useContext(ServicesContext);
+    const product = services?.find((service) => service?._id === productId);
 
     const onBackPress = () => {
         navigation.goBack();
@@ -24,13 +29,18 @@ const ProductDetails = ({navigation, route}) => {
          Linking.openURL(`mailto:${email}`);
     }
 
+    const onBookmark = async () => {
+        const servicesData = await updateService(product?._id, {liked: true});
+        setServices(servicesData);
+    }
+
   return (
     <SafeAreaView style={styles.safe}>
         <ScrollView style={styles.container}>
             {product?.images?.length > 1 ? (
                 <ImageCarousel images={product?.images} />
             ) : (
-                <Image style={styles.image} source={{uri: product?.image}} />
+                <Image style={styles.image} source={{uri: `${Config.API_BASE_URL}/${product?.image?.path}`}} />
             )}
 
              {/* Here If I place Pressable above main image in code lines, then it is going below of image and also elevation is not working, hence, need to put after image so that it comes top of main image */}
@@ -40,7 +50,7 @@ const ProductDetails = ({navigation, route}) => {
 
             <View style={styles.content}>
                 <Text style={styles.title}>{product?.title}</Text>
-                <Text style={styles.price}>{product?.price}</Text>
+                <Text style={styles.price}>$ {product?.price}</Text>
                 <Text style={styles.description}>{product?.description}</Text>
             </View>
 
@@ -48,8 +58,8 @@ const ProductDetails = ({navigation, route}) => {
         </ScrollView>
 
         <View style={styles.footer}>
-            <Pressable style={styles.bookmarkContainer}>
-                <Image style={styles.bookmarkIcon} source={require('./../../assets/bookmark.png')} />
+            <Pressable onPress={onBookmark} style={styles.bookmarkContainer}>
+                <Image style={styles.bookmarkIcon} source={product?.liked ? require('./../../assets/bookmark-filled.png') : require('./../../assets/bookmark.png')} />
             </Pressable>
             <Button onPress={onContact} title={'Contact Seller'} style={{width: width * 0.675}} />
         </View>
@@ -69,6 +79,7 @@ const styles = StyleSheet.create({
     image: {
         width: '100%',
         height: height * 0.45,
+        backgroundColor: COLORS.lightGrey
     },
     content: {
         backgroundColor: COLORS.white,
@@ -105,7 +116,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     bookmarkIcon: {
-        width: 20,
+        width: 16,
         height: 20, 
     },
     backContainer: {
