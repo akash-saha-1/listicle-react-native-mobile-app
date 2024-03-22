@@ -45,3 +45,10 @@ export { ThemeProvider, ThemeContext };
 Read this for notifications,
 https://notifee.app/react-native/docs/displaying-a-notification
 https://github.com/invertase/notifee/issues/768#issuecomment-1541195918
+
+-----------------------------------------------------------------------------------------------------------
+in android build release need to use same password of keystore in both keystore and key password field in gradle.properties file => which is wrong, app was signed using 12345 password.
+
+need to remove app.tsx file for duplicate spash asset issue.
+------------------------------------------------------------------------------------------------------------
+google drive apk link: https://drive.google.com/file/d/1IWVBrXCMfH32K1JxnQ63OV-6lOWSJ_Q9/view?usp=sharing

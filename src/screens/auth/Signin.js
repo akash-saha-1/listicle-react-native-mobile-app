@@ -20,8 +20,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignIn = ({navigation}) => {
   const [values, setValues] = useState({
-    email: 'realcricketgame20@gmail.com',
-    password: '12345',
+    //email: 'realcricketgame20@gmail.com',
+    //password: '12345',
+    email: '',
+    password: '',
   });
   const [loading, setLoading] = useState(false);
   const {user, setUser} = useContext(UserContext);
