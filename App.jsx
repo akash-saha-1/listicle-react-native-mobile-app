@@ -5,6 +5,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Linking
 } from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Splash from './src/screens/auth/Splash';
@@ -30,12 +31,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addTokenToAxios} from './src/utils/Request';
 import {getProfile, getServices} from './src/utils/BackendAPICalls';
 import notifee, {
-  AndroidColor,
-  AndroidImportance,
-  AndroidStyle,
   EventType,
   useNotification,
 } from '@notifee/react-native';
+import DeepLinking from 'react-native-deep-linking';
+import NavigationService from './NavigationService';
 
 export const UserContext = createContext({});
 export const ProfileContext = createContext({});
@@ -45,7 +45,11 @@ function App() {
   const [user, setUser] = useState({});
   const [profile, setProfile] = useState({});
   const [services, setServices] = useState([]);
+  const [deepLinkingUrl, setDeepLinkingUrl] = useState('');
+  const [initialRoutes, setInitialRoutes] = useState(['Splash', 'ProfileStack', 'Settings']);
   //console.log(`user from app.js: `, user);
+
+  //const navigation = useNavigation();
 
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
@@ -61,6 +65,7 @@ function App() {
       let token = await AsyncStorage.getItem('auth_token');
       if (token?.length > 1) {
         setUser({token});
+        setInitialRoutes(['Tabs', 'ProfileStack', '']);
       }
     })();
   }, []);
@@ -93,6 +98,39 @@ function App() {
           }
       });
   });
+
+  useEffect(() => {
+    DeepLinking.addScheme('example://');
+    const handleUrl = ({ url }) => {
+      Linking.canOpenURL(url).then((supported) => {
+        if (supported) {
+          DeepLinking.evaluateUrl(url);
+        }
+      });
+    };
+
+    Linking.addEventListener('url', handleUrl);
+ 
+    DeepLinking.addRoute('/test', (response) => {
+      setDeepLinkingUrl('SignUp');
+    });
+ 
+    DeepLinking.addRoute('/test/:id', (response) => {
+      setDeepLinkingUrl('Settings');
+    });
+
+    //If your app was launched from an external url registered to your app you can access and handle it from any component you want with
+      var url = Linking.getInitialURL().then((url) => {
+        if (url) {
+          Linking.openURL(url);
+        }
+      }).catch(err => console.error('An error occurred', err));
+
+    // example: <Button
+    //   onPress={() => Linking.openURL('example://test')}
+    //   title="Open example://test"
+    // />
+  }, []);
 
   useEffect(() => {
     const getProfileData = async () => {
@@ -133,7 +171,7 @@ function App() {
 
   const ProfileStack = () => {
     return (
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={initialRoutes[2]}>
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="CreateListing" component={CreateListing} />
@@ -145,6 +183,7 @@ function App() {
   const Tabs = () => {
     return (
       <Tab.Navigator
+        initialRouteName={initialRoutes[1]}
         screenOptions={({route}) => ({
           tabBarIcon: ({focused, color, size}) => {
             let iconName;
@@ -179,9 +218,11 @@ function App() {
       <UserContext.Provider value={{user, setUser}}>
         <ProfileContext.Provider value={{profile, setProfile}}>
           <ServicesContext.Provider value={{services, setServices}}>
-            <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme}>
+            <NavigationContainer theme={isDarkMode ? DarkTheme : MyTheme} ref={(navigatorRef) => {
+              NavigationService.setTopLevelNavigator(navigatorRef);
+            }}>
               <Stack.Navigator
-                initialRouteName="Splash"
+                initialRouteName={initialRoutes[0]}
                 screenOptions={{headerShown: false}}>
                 {user?.token?.length > 1 ? (
                   <>
