@@ -1,10 +1,10 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, {createContext, useContext} from 'react';
+import React, {createContext, useContext, useEffect} from 'react';
 import {useColorScheme} from 'react-native';
 import Splash from './src/screens/auth/Splash';
 import SignUp from './src/screens/auth/SignUp';
 import SignIn from './src/screens/auth/SignIn';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {COLORS} from './src/utils/COLORS';
 import {DefaultTheme, DarkTheme} from '@react-navigation/native';
@@ -18,6 +18,13 @@ import Settings from './src/screens/app/Settings';
 import CreateListing from './src/screens/app/CreateListing';
 import MyListings from './src/screens/app/MyListings';
 import {UserContext} from './App';
+import notifee, {
+  AndroidColor,
+  AndroidImportance,
+  AndroidStyle,
+  EventType,
+  useNotification,
+} from '@notifee/react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -68,8 +75,8 @@ const Tabs = () => {
 function Routes() {
   const {user, setUser} = useContext(UserContext);
   const isDarkMode = useColorScheme() === 'dark';
-  console.log('user from routes: ', user);
-
+  //console.log('user from routes: ', user);
+ 
   const MyTheme = {
     ...DefaultTheme,
     colors: {

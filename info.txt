@@ -42,3 +42,6 @@ const ThemeProvider = ({ children }) => {
 
 export { ThemeProvider, ThemeContext };
 ------------------------------------------------------------------------------------------------------------
+Read this for notifications,
+https://notifee.app/react-native/docs/displaying-a-notification
+https://github.com/invertase/notifee/issues/768#issuecomment-1541195918

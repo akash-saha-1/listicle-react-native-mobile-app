@@ -12,7 +12,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import SignUp from './src/screens/auth/SignUp';
 import Config from 'react-native-config';
 import SignIn from './src/screens/auth/SignIn';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {COLORS} from './src/utils/COLORS';
 import {DefaultTheme, DarkTheme} from '@react-navigation/native';
@@ -29,6 +29,13 @@ import MyListings from './src/screens/app/MyListings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addTokenToAxios} from './src/utils/Request';
 import {getProfile, getServices} from './src/utils/BackendAPICalls';
+import notifee, {
+  AndroidColor,
+  AndroidImportance,
+  AndroidStyle,
+  EventType,
+  useNotification,
+} from '@notifee/react-native';
 
 export const UserContext = createContext({});
 export const ProfileContext = createContext({});
@@ -57,6 +64,35 @@ function App() {
       }
     })();
   }, []);
+
+  async function checkInitialNotificationStatus() {
+    //console.log(`1`);
+    const initialNotification = await notifee.getInitialNotification();
+
+    if (initialNotification) {
+      console.log(`2`);
+        // Do what you want here. I'm setting state so that my Home Screen knows where to navigate to.
+    }
+  }
+
+  useEffect(() => {
+
+    // Check to see if we got here via an InitialNotification
+    checkInitialNotificationStatus();
+
+    // Use this to listen to notification presses when the app is in the foreground.
+    return notifee.onForegroundEvent(({ type, detail }) => {
+      //console.log(`3`);
+      if (type == EventType.ACTION_PRESS || type == EventType.PRESS) {
+        console.log(`4`);
+        console.log(`detail: `, detail);
+        // navigation wont work HermesInternal. need to state global context state and use common function from every screen to go that component.
+        // useNavigation().navigate('Signup');
+              // You can navigate here or set state, asyncStorage, etc.
+              // In iOS, this fires in addition to the initial notification so you'll want to setup something here to handle that. 
+          }
+      });
+  });
 
   useEffect(() => {
     const getProfileData = async () => {
